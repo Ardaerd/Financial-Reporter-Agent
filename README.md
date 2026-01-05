@@ -8,7 +8,7 @@ A multi-agent AI system built with **LangGraph** and **Streamlit** for automated
 
 *   **Plan-Execute-Verify-Correct Architecture:** Unlike standard LLM chains, this agent self-corrects. If data is missing or a tool fails, it replans and retries automatically.
 *   **Multi-Agent Orchestration:** Specialized roles (Planner, Researcher, Analyst, Reviewer, Writer) handle different aspects of the pipeline.
-*   **Live Market Data:** Integrates with `yfinance` for real-time stock data and `Tavily` for current market news.
+*   **Live Market Data:** Integrates with `yfinance` for real-time stock data and `DuckDuckGo` for current market news.
 *   **Structured Outputs:** Uses Pydantic models to ensure strictly formatted data routing between nodes.
 *   **Interactive UI:** A clean, real-time dashboard built with Streamlit to visualize the agent's thought process and final report.
 
@@ -26,10 +26,13 @@ This project implements a state machine using **LangGraph**. The workflow consis
 
 *   **Framework:** [LangChain](https://www.langchain.com/) / [LangGraph](https://python.langchain.com/docs/langgraph)
 *   **Frontend:** [Streamlit](https://streamlit.io/)
-*   **LLM:** OpenAI GPT-4o (Reasoning & Generation)
-*   **Tools:** `yfinance` (Market Data), `Tavily` (Search/News)
+*   **LLM:** OpenAI GPT-OSS-120b (Reasoning & Generation)
+*   **Tools:** `yfinance` (Market Data), `DuckDuckGo` (Search/News)
+*   **Package Manager:** [uv](https://github.com/astral-sh/uv)
 
 ## 📦 Installation
+
+This project uses `uv` for fast dependency management.
 
 1.  **Clone the repository**
     ```bash
@@ -37,34 +40,37 @@ This project implements a state machine using **LangGraph**. The workflow consis
     cd financial-analysis-agent
     ```
 
-2.  **Create a virtual environment**
+2.  **Install `uv` (if not already installed)**
     ```bash
-    python -m venv venv
-    source venv/bin/activate  # On Windows: venv\Scripts\activate
+    pip install uv
+    # Or on macOS: brew install uv
     ```
 
-3.  **Install dependencies**
+3.  **Sync dependencies**
+    This creates the virtual environment and installs all packages from `pyproject.toml`.
     ```bash
-    pip install -r requirements.txt
+    uv sync
     ```
 
 4.  **Set up environment variables**
     Create a `.env` file in the root directory and add your API keys:
     ```env
-    # Required for LLM
-    OPENAI_API_KEY=your_openai_api_key
+    # Required: API Key or Auth Code depending on your setup
+    # OPENAI_API_KEY=your_key_here
+    # OR if using a custom endpoint/proxy:
+    AUTH_CODE=your_auth_code
+    BASE_URL=your_base_url
     
-    # Required for News Search
-    TAVILY_API_KEY=your_tavily_api_key
-
-    # Optional: If using a custom endpoint/proxy
-    # BASE_URL=your_base_url
-    # AUTH_CODE=your_auth_code
+    # Required for Tracing with LangSmith (Optional but recommended)
+    LANGSMITH_TRACING=true
+    LANGSMITH_ENDPOINT=https://api.smith.langchain.com
+    LANGSMITH_API_KEY=your_langsmith_key
+    LANGSMITH_PROJECT=financial-agent
     ```
 
 ## 🏃‍♂️ Usage
 
-To start the application, run the Streamlit command:
+Run the Streamlit application using `uv run` to automatically handle the environment:
 
 ```bash
-streamlit run main.py
+uv run streamlit run streamlit_app.py --server.enableCORS=false
